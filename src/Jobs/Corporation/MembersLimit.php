@@ -77,6 +77,10 @@ class MembersLimit extends AbstractAuthCorporationJob
             'corporation_id' => $this->getCorporationId(),
         ]);
 
+        if ($this->shouldUseCache($response) &&
+            CorporationMemberLimits::where('corporation_id', $this->getCorporationId())->exists())
+            return;
+
         $limit = $response->getBody();
 
         if (! property_exists($limit, 'scalar'))

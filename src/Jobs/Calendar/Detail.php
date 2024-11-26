@@ -87,11 +87,13 @@ class Detail extends AbstractAuthCharacterJob
                     'event_id' => $event_id,
                 ]);
 
-                $detail = $response->getBody();
-
                 $model = CharacterCalendarEventDetail::firstOrNew([
                     'event_id' => $event_id,
                 ]);
+
+                if ($this->shouldUseCache($response) && $model->exists) return true; // Move onto the next detail if this is cached
+
+                $detail = $response->getBody();
 
                 CalendarDetailMapping::make($model, $detail, [
                     'event_id' => function () use ($event_id) {

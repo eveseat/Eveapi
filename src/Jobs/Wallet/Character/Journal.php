@@ -92,7 +92,7 @@ class Journal extends AbstractAuthCharacterJob
         // Perform a journal walk backwards to get all of the
         // entries as far back as possible. When the response from
         // ESI is empty, we can assume we have everything.
-        while (true) {
+        do {
 
             $response = $this->retrieve([
                 'character_id' => $this->getCharacterId(),
@@ -132,8 +132,6 @@ class Journal extends AbstractAuthCharacterJob
             });
 
             // in case the last known entry has been reached or we non longer have pages, terminate the job.
-            if (! $this->nextPage($response->getPagesCount()) || $this->at_last_entry)
-                break;
-        }
+        } while ($this->nextPage($response->getPagesCount()) || $this->at_last_entry);
     }
 }

@@ -73,7 +73,7 @@ class Standings extends AbstractAuthCorporationJob
     {
         parent::handle();
 
-        while (true) {
+        do {
 
             $response = $this->retrieve([
                 'corporation_id' => $this->getCorporationId(),
@@ -100,8 +100,6 @@ class Standings extends AbstractAuthCorporationJob
                 ]);
             });
 
-            if (! $this->nextPage($response->getPagesCount()))
-                break;
-        }
+        } while ($this->nextPage($response->getPagesCount()));
     }
 }

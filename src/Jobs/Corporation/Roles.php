@@ -91,6 +91,10 @@ class Roles extends AbstractAuthCorporationJob
             'corporation_id' => $this->getCorporationId(),
         ]);
 
+        if ($this->shouldUseCache($response) &&
+            CorporationRole::where('corporation_id', $this->getCorporationId())->exists())
+            return;
+
         $roles = $response->getBody();
 
         $returned_characters_ids = collect();

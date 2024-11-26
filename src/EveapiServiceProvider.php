@@ -71,6 +71,8 @@ class EveapiServiceProvider extends AbstractSeatPlugin
             \Seat\Eveapi\Database\Seeders\ScheduleSeeder::class,
             // \Seat\Eveapi\Database\Seeders\Sde\SdeSeeder::class, -- Disabled until later implemented again in services
         ]);
+
+        $this->mergeConfigFrom(__DIR__ . '/Config/eveapi.cache.php', 'eveapi.cache');
     }
 
     private function addCommands()

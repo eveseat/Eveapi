@@ -69,11 +69,13 @@ class Info extends AbstractCharacterJob
             'character_id' => $this->getCharacterId(),
         ]);
 
-        $info = $response->getBody();
-
         $model = CharacterInfo::firstOrNew([
             'character_id' => $this->getCharacterId(),
         ]);
+
+        if ($this->shouldUseCache($response) && $model->exists) return;
+
+        $info = $response->getBody();
 
         InfoMapping::make($model, $info, [
             'character_id' => function () {

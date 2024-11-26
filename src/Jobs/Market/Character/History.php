@@ -72,7 +72,7 @@ class History extends AbstractAuthCharacterJob
     {
         parent::handle();
 
-        while (true) {
+        do {
 
             $response = $this->retrieve([
                 'character_id' => $this->getCharacterId(),
@@ -99,9 +99,6 @@ class History extends AbstractAuthCharacterJob
                     },
                 ])->save();
             });
-
-            if (! $this->nextPage($response->getPagesCount()))
-                return;
-        }
+        } while ($this->nextPage($response->getPagesCount()));
     }
 }

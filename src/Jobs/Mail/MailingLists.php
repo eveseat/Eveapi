@@ -70,6 +70,9 @@ class MailingLists extends AbstractAuthCharacterJob
             'character_id' => $this->getCharacterId(),
         ]);
 
+        if ($this->shouldUseCache($response) && MailMailingList::where('character_id', $this->getCharacterId())->exists())
+            return;
+
         $lists = $response->getBody();
 
         collect($lists)->each(function ($list) {

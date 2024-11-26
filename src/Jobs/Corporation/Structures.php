@@ -100,7 +100,7 @@ class Structures extends AbstractAuthCorporationJob
     {
         parent::handle();
 
-        while (true) {
+        do {
 
             $response = $this->retrieve([
                 'corporation_id' => $this->getCorporationId(),
@@ -173,9 +173,7 @@ class Structures extends AbstractAuthCorporationJob
                 $this->known_structures->push($structure->structure_id);
             });
 
-            if (! $this->nextPage($response->getPagesCount()))
-                break;
-        }
+        } while ($this->nextPage($response->getPagesCount()));
 
         $outdated_structure = CorporationStructure::where('corporation_id', $this->getCorporationId())
             ->whereNotIn('structure_id', $this->known_structures->flatten()->all())

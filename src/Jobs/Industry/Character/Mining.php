@@ -72,11 +72,15 @@ class Mining extends AbstractAuthCharacterJob
     {
         parent::handle();
 
-        while (true) {
+        do {
 
             $response = $this->retrieve([
                 'character_id' => $this->getCharacterId(),
             ]);
+
+            if ($this->shouldUseCache($response) &&
+                CharacterMining::where('character_id', $this->getCharacterId())->exists())
+                continue;
 
             $entries = $response->getBody();
 
@@ -117,9 +121,6 @@ class Mining extends AbstractAuthCharacterJob
 
                 }
             });
-
-            if (! $this->nextPage($response->getPagesCount()))
-                break;
-        }
+        } while ($this->nextPage($response->getPagesCount()));
     }
 }

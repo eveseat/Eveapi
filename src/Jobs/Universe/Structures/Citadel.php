@@ -102,6 +102,9 @@ class Citadel extends AbstractAuthCharacterJob
                 'structure_id' => $this->structure_id,
             ]);
 
+            if ($this->shouldUseCache($response) && $model->exists)
+                return;
+
             $structure = $response->getBody();
 
             UniverseStructureMapping::make($model, $structure, [

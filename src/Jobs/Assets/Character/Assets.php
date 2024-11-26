@@ -109,14 +109,26 @@ class Assets extends AbstractAuthCharacterJob
                     $structure_batch->addStructure($asset->location_id);
                 }
 
-                AssetMapping::make($model, $asset, [
+                // The model returned here will be modified based on the esi data.
+                // However Laravel is smart and the isClean() method will only return false
+                // If the esi fields have changed. Simply applying the same data keeps a clean model.
+                $model = AssetMapping::make($model, $asset, [
                     'character_id' => function () {
                         return $this->getCharacterId();
                     },
-                    'updated_at' => function () use ($start) {
-                            return $start;
-                        },
-                ])->save();
+                ]);
+
+                if ($model->exists && $model->isClean()){
+                    // No ESI data updated, just touch the timestamp
+                    $model->updated_at = $start;
+
+                    // There is no point triggering events when nothing has changed
+                    $model->saveQuietly();
+                } else {
+                    // ESI data has changed. So just save the model.
+                    // This will update the timestamp and also trigger events.
+                    $model->save();
+                }
             });
 
             if (! $this->nextPage($response->getPagesCount()))

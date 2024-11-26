@@ -69,7 +69,7 @@ class Orders extends EsiBase
         $structure_batch = new StructureBatch();
 
         //load all market data
-        while (true) {
+        do {
             //retrieve one page of market orders
             $response = $this->retrieve(['region_id' => $region_id]);
             $orders = $response->getBody();
@@ -120,8 +120,7 @@ class Orders extends EsiBase
             });
 
             // if there are more pages with orders, continue loading them
-            if (! $this->nextPage($response->getPagesCount())) break;
-        }
+        } while ($this->nextPage($response->getPagesCount()));
 
         // remove old orders
         // if they didn't get updated, we can remove them

@@ -77,6 +77,10 @@ class Divisions extends AbstractAuthCorporationJob
             'corporation_id' => $this->getCorporationId(),
         ]);
 
+        if ($this->shouldUseCache($response) &&
+            CorporationDivision::where('corporation_id', $this->getCorporationId())->exists())
+            return;
+
         $divisions = $response->getBody();
 
         if (property_exists($divisions, 'hangar'))

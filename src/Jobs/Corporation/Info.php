@@ -68,6 +68,10 @@ class Info extends AbstractCorporationJob
             'corporation_id' => $this->getCorporationId(),
         ]);
 
+        if ($this->shouldUseCache($response) &&
+            CorporationInfo::where('corporation_id', $this->getCorporationId())->exists())
+            return;
+
         $corporation = $response->getBody();
 
         $model = CorporationInfo::firstOrNew([

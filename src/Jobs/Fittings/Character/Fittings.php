@@ -71,6 +71,10 @@ class Fittings extends AbstractAuthCharacterJob
             'character_id' => $this->getCharacterId(),
         ]);
 
+        if ($this->shouldUseCache($response) &&
+            CharacterFitting::where('character_id', $this->getCharacterId())->exists())
+            return;
+
         $fittings = $response->getBody();
 
         collect($fittings)->each(function ($fitting) {

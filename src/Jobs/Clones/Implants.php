@@ -73,6 +73,10 @@ class Implants extends AbstractAuthCharacterJob
             'character_id' => $this->getCharacterId(),
         ]);
 
+        if ($this->shouldUseCache($response) &&
+            CharacterImplant::where('character_id', $this->getCharacterId())->exists())
+            return;
+
         $implants = $response->getBody();
 
         collect($implants)->each(function ($implant) {

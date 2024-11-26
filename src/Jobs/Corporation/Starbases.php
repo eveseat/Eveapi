@@ -98,7 +98,7 @@ class Starbases extends AbstractAuthCorporationJob
     {
         parent::handle();
 
-        while (true) {
+        do {
 
             $response = $this->retrieve([
                 'corporation_id' => $this->getCorporationId(),
@@ -123,9 +123,7 @@ class Starbases extends AbstractAuthCorporationJob
 
             });
 
-            if (! $this->nextPage($response->getPagesCount()))
-                break;
-        }
+        } while ($this->nextPage($response->getPagesCount()));
 
         CorporationStarbase::where('corporation_id', $this->getCorporationId())
             ->whereNotIn('starbase_id', $this->known_starbases->flatten()->all())

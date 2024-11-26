@@ -80,6 +80,10 @@ class Jobs extends AbstractAuthCharacterJob
             'character_id' => $this->getCharacterId(),
         ]);
 
+        if ($this->shouldUseCache($response) &&
+            CharacterIndustryJob::where('character_id', $this->getCharacterId())->exists())
+            return;
+
         $industry_jobs = $response->getBody();
 
         collect($industry_jobs)->each(function ($job) use ($structure_batch) {

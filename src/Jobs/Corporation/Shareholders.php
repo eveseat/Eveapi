@@ -97,7 +97,7 @@ class Shareholders extends AbstractAuthCorporationJob
     {
         parent::handle();
 
-        while (true) {
+        do {
 
             $response = $this->retrieve([
                 'corporation_id' => $this->getCorporationId(),
@@ -120,9 +120,7 @@ class Shareholders extends AbstractAuthCorporationJob
             $this->known_shareholders->push(collect($shareholders)
                 ->pluck(['shareholder_type', 'shareholder_id'])->flatten()->all());
 
-            if (! $this->nextPage($response->getPagesCount()))
-                break;
-        }
+        } while ($this->nextPage($response->getPagesCount()));
 
         CorporationShareholder::where('corporation_id', $this->getCorporationId())
             ->whereNotIn('shareholder_id', $this->known_shareholders->flatten()->all())

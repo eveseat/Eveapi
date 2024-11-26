@@ -92,7 +92,7 @@ class Recent extends AbstractAuthCorporationJob
      */
     public function handle()
     {
-        while (true) {
+        do {
 
             $response = $this->retrieve([
                 'corporation_id' => $this->getCorporationId(),
@@ -112,9 +112,7 @@ class Recent extends AbstractAuthCorporationJob
                     $this->killmail_jobs->add(new Detail($killmail->killmail_id, $killmail->killmail_hash));
             });
 
-            if (! $this->nextPage($response->getPagesCount()))
-                break;
-        }
+        } while ($this->nextPage($response->getPagesCount()));
 
         if ($this->killmail_jobs->isNotEmpty()) {
             if($this->batchId) {

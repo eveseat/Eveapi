@@ -70,6 +70,10 @@ class Labels extends AbstractAuthAllianceJob
             'alliance_id' => $this->getAllianceId(),
         ]);
 
+        if ($this->shouldUseCache($response) &&
+            AllianceLabel::where('alliance_id', $this->getAllianceId())->exists())
+            return;
+
         $labels = $response->getBody();
 
         collect($labels)->each(function ($label) {

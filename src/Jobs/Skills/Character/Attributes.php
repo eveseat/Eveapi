@@ -71,11 +71,14 @@ class Attributes extends AbstractAuthCharacterJob
             'character_id' => $this->getCharacterId(),
         ]);
 
-        $attributes = $response->getBody();
-
         $model = CharacterAttribute::firstOrNew([
             'character_id' => $this->getCharacterId(),
         ]);
+
+        if ($this->shouldUseCache($response) && $model->exists)
+            return;
+
+        $attributes = $response->getBody();
 
         CharacterAttributesMapping::make($model, $attributes, [
             'character_id' => function () {

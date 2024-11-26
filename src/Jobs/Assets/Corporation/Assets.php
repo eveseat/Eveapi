@@ -112,19 +112,32 @@ class Assets extends AbstractAuthCorporationJob
                         'item_id' => $asset->item_id,
                     ]);
 
+                    // The model returned here will be modified based on the esi data.
+                    // However Laravel is smart and the isClean() method will only return false
+                    // If the esi fields have changed. Simply applying the same data keeps a clean model.
+                    $model = AssetMapping::make($model, $asset, [
+                        'corporation_id' => function () {
+                            return $this->getCorporationId();
+                        },
+                    ]);
+
                     //make sure that the location is loaded if it is in a station or citadel
                     if (in_array($asset->location_flag, StructureBatch::RESOLVABLE_LOCATION_FLAGS) && in_array($asset->location_type, StructureBatch::RESOLVABLE_LOCATION_TYPES)) {
                         $structure_batch->addStructure($asset->location_id);
                     }
 
-                    AssetMapping::make($model, $asset, [
-                        'corporation_id' => function () {
-                            return $this->getCorporationId();
-                        },
-                        'updated_at' => function () use ($start) {
-                            return $start;
-                        },
-                    ])->save();
+                    if ($model->exists && $model->isClean()){
+                        // No ESI data updated, just touch the timestamp
+                        $model->updated_at = $start;
+
+                        // There is no point triggering events when nothing has changed
+                        $model->saveQuietly();
+                    } else {
+                        // ESI data has changed. So just save the model.
+                        // This will update the timestamp and also trigger events.
+                        $model->save();
+                    }
+
                 });
             });
 

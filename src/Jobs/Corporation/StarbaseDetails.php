@@ -107,12 +107,18 @@ class StarbaseDetails extends AbstractAuthCorporationJob
                     'starbase_id' => $starbase->starbase_id,
                 ]);
 
-                $detail = $response->getBody();
-
                 $model = CorporationStarbaseDetail::firstOrNew([
                     'corporation_id' => $this->getCorporationId(),
                     'starbase_id' => $starbase->starbase_id,
                 ]);
+
+                if ($this->shouldUseCache($response) && $model->exists){
+                        $this->known_starbases->push($starbase->starbase_id);
+
+                        return true;
+                    }
+
+                $detail = $response->getBody();
 
                 StarbaseDetailMapping::make($model, $detail, [
                     'corporation_id' => function () {

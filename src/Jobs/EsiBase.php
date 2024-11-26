@@ -422,6 +422,18 @@ abstract class EsiBase extends AbstractJob
     }
 
     /**
+     * Check if the call should respect the cache
+     * based on the request being cached and settings.
+     *
+     * @param  \Seat\Services\Contracts\EsiResponse  $response
+     * @return bool
+     */
+    public function shouldUseCache(EsiResponse $response): bool
+    {
+        return config('eveapi.cache.respect_cache') && $response->isFromCache();
+    }
+
+    /**
      * @param  \Seat\Eseye\Exceptions\RequestFailedException  $exception
      *
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
