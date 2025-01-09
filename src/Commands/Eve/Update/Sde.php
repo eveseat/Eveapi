@@ -50,7 +50,8 @@ class Sde extends Command
      */
     protected $signature = 'eve:update:sde
                             {--local : Check the local config file for the version string}
-                            {--force : Force re-installation of an existing SDE version}';
+                            {--force : Force re-installation of an existing SDE version}
+                            {--json=https://raw.githubusercontent.com/eveseat/resources/master/sde.json : Specify the metadata to update the SDE}';
 
     /**
      * The console command description.
@@ -254,7 +255,7 @@ class Sde extends Command
     {
 
         $result = $this->getGuzzle()->request('GET',
-            'https://raw.githubusercontent.com/eveseat/resources/master/sde.json', [
+            $this->option('json'), [
                 'headers' => ['Accept' => 'application/json'],
             ]);
 
